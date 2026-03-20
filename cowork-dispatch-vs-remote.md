@@ -1,5 +1,12 @@
 # Cowork Dispatch vs Claude Code Remote — wyjaśnienie
 
+## Moja konfiguracja
+
+- **Komputer firmowy** → zablokowany (Microsoft Authenticator, brak instalacji Claude, tajemnica firmy)
+- **Mac mini prywatny** → Claude Code w terminalu (Opus, MCP, narzędzia)
+- **Telefon** → Claude mobile
+- **Używam:** Apple Mail, Excel, PowerPoint, przeglądarka, Claude Desktop
+
 ## Kluczowa różnica
 
 | | **Claude Code Remote** | **Cowork Dispatch** |
@@ -10,31 +17,51 @@
 | **Interfejs** | Terminal + przeglądarka | Wizualny, bez kodu |
 | **Kontekst** | Sesja kodowania | Persistent conversation (ciągła rozmowa) |
 
-## Jako użytkownik terminala na Mac — dlaczego Dispatch może się przydać?
+## Kiedy Dispatch > Claude Code (w mojej sytuacji)
 
-**Claude Code Remote** = kiedy kodujesz. Odpalisz `claude --remote-control`, otworzysz sesję na telefonie i kontynuujesz review kodu z kanapy.
+1. **Jestem poza domem, z dala od terminala** — zlecam z telefonu zadanie na Maca, np. "przygotuj prezentację z danych w ~/projekty/raport.csv"
+2. **Praca na plikach Office (Excel, PowerPoint)** — Dispatch przez konektory może bezpośrednio tworzyć/edytować pliki Office
+3. **Ciągłość rozmowy bez sesji** — jedna ciągła rozmowa vs sesje w Claude Code
+4. **Apple Mail / integracje bez MCP** — jeśli nie mam MCP do maila, Dispatch z konektorem jest prostszy
+5. **Zadania gdy Mac pracuje, a ja nie** — odpalam z telefonu, wracam do wyników
 
-**Cowork Dispatch** = kiedy NIE kodujesz. To dla zadań, które nie dotyczą kodu.
+## PROBLEM: Oddzielne pamięci
 
-## Praktyczne pomysły na Dispatch (dla dewelopera na Macu)
+To jest kluczowy minus używania obu narzędzi jednocześnie.
 
-1. **"Przygotuj mi brief z tych 5 PDF-ów na pulpicie"** — zlecasz z telefonu, Claude przetwarza lokalne pliki na desktopie
-2. **"Sprawdź moje maile i podsumuj co ważnego przyszło od klienta X"** — przez konektor email, bez otwierania laptopa
-3. **"Sformatuj ten CSV z danymi i zrób tabelę w Google Sheets"** — integracja z konektorami
-4. **"Przejrzyj notatki z folderu ~/Documents/meetings i przygotuj action items"** — praca na lokalnych plikach
-5. **"Przypomnij mi o deploy'u o 15:00"** — zaplanowane zadania (scheduled tasks)
-6. **"Wyślij na Slacka status update do zespołu"** — przez konektor Slack
+| System | Gdzie pamięć | Format |
+|---|---|---|
+| **Claude Code** | `CLAUDE.md`, `~/.claude/` | Pliki projektowe, user memory |
+| **Cowork/Desktop** | Chmura Anthropic | Persistent conversation + profile |
+| **Claude mobile** | Chmura Anthropic | Historia czatów |
 
-## Kiedy co wybrać?
+Te systemy **nie synchronizują się**. Cowork nie wie co robiłem w Claude Code i odwrotnie. To jak dwóch asystentów z osobnymi notatnikami.
 
-- **Piszesz kod?** → Claude Code Remote (terminal)
-- **Zadanie biurowe?** → Cowork Dispatch (telefon → desktop)
-- **Równoległe zadania kodowe?** → Claude Code na web (cloud)
+### Konsekwencje
 
-## Ważne ograniczenie
+- Buduję kontekst w Claude Code (styl pracy, preferencje, projekty) → **Cowork tego nie widzi**
+- Zlecam coś przez Dispatch → Claude zaczyna od zera, bez wiedzy o tym jak pracuję w terminalu
+- Z czasem mam **dwa fragmenty "relacji"** zamiast jednej spójnej
 
-Dispatch **wymaga**, żeby Mac był obudzony i Claude Desktop app był otwarty. Jeśli Mac śpi — zadanie nie ruszy. To nie jest serwis w chmurze.
+## Decyzja: Claude Code jako główne narzędzie
 
-## Podsumowanie
+Skoro zależy mi na ciągłości kontekstu, a większość pracy robię w Claude Code — **trzymam się jednego narzędzia jako głównego**.
 
-Skoro głównie pracujesz w terminalu — **Claude Code Remote to Twoje główne narzędzie do kodu**. Dispatch jest uzupełnieniem na zadania pozakodowe. Nie zastępują się nawzajem — uzupełniają się.
+### Strategia utrzymania kontekstu
+
+1. **CLAUDE.md jako jedyne źródło prawdy** — preferencje, styl pracy, decyzje projektowe
+2. **`claude --continue` / `--resume`** — kontynuacja sesji z pełnym kontekstem zamiast Dispatch
+3. **`claude --remote-control`** — dostęp z telefonu gdy potrzebuję
+4. **MCP serwery** (mail, kalendarz) w Claude Code — zamiast konektorów Cowork
+
+### Kiedy mimo wszystko użyć Dispatch
+
+- Zadania stricte biurowe na plikach Office, gdzie Claude Code nie ma przewagi
+- Gdy nie mam dostępu do terminala ANI przeglądarki (tylko telefon)
+- Jednorazowe zadania, gdzie brak kontekstu nie przeszkadza
+
+## Wniosek
+
+**Jedno narzędzie z pełnym kontekstem > dwa narzędzia z połówką każde.**
+
+Dispatch to wygoda, nie konieczność. Przy mojej konfiguracji lepiej inwestować w dobrze utrzymany CLAUDE.md i MCP serwery niż rozbijać kontekst między dwa systemy.
