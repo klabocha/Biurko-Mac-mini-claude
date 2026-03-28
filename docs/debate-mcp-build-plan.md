@@ -37,11 +37,11 @@ Prawdziwa debata = wszyscy widzą to samo, każdy reaguje na argumenty innych.
                    │
     ┌──────────────┼──────────────┐
     │              │              │
-    ▼              ▼              ▼
-┌────────┐  ┌──────────┐  ┌──────────┐
-│Claude  │  │  Grok 3  │  │ Kimi 2.5 │  ... + GPT o3, Gemini 2.5 Pro
-│Opus 4.6│  │  (xAI)   │  │(Moonshot)│
-└────────┘  └──────────┘  └──────────┘
+    ▼              ▼              ▼           ▼              ▼              ▼
+┌────────┐  ┌──────────┐  ┌──────────┐  ┌────────┐  ┌──────────┐  ┌───────────┐
+│ GPT o3 │  │Grok 4.1  │  │ Kimi 2.5 │  │Gemini  │  │ DeepSeek │  │Perplexity │
+│(OpenAI)│  │  (xAI)   │  │(Moonshot)│  │2.5 Pro │  │  Chat    │  │ Sonar Pro │
+└────────┘  └──────────┘  └──────────┘  └────────┘  └──────────┘  └───────────┘
 ```
 
 ### Protokół debaty (wielorundowy)
@@ -98,7 +98,7 @@ Runda FINALNA - SYNTEZA
     },
     "grok": {
       "provider": "openai-compatible",
-      "model": "grok-3",
+      "model": "grok-4-1-fast",
       "api_key": "${XAI_API_KEY}",
       "base_url": "https://api.x.ai/v1"
     },
@@ -138,38 +138,64 @@ tool: list_models() → pokazuje aktywne modele
 
 ---
 
-## Faza 2: Grafika i Frontend (DO UZUPEŁNIENIA)
+## Faza 2: Grafika i Frontend
 
 ### Koncepcja
 
-Debata o designie/grafice działa tak samo jak tekstowa:
-1. Wszystkie modele dostają ten sam brief ("zaprojektuj landing page")
-2. Każdy proponuje koncepcję (tekstowy opis + opcjonalnie kod/prompt graficzny)
-3. Konfrontacja: modele widzą propozycje innych i krytykują/ulepszają
-4. Po ustaleniu koncepcji → narzędzia graficzne generują wizualizacje
+Debata o designie/grafice dziala tak samo jak tekstowa:
+1. Wszystkie modele dostaja ten sam brief ("zaprojektuj landing page")
+2. Kazdy proponuje koncepcje (tekstowy opis + opcjonalnie kod/prompt graficzny)
+3. Konfrontacja: modele widza propozycje innych i krytykuja/ulepszaja
+4. Po ustaleniu koncepcji -> narzedzia graficzne generuja wizualizacje
 
-### Narzędzia graficzne (DO UZUPEŁNIENIA po sprawdzeniu na Mac mini)
+### Narzedzia graficzne (sprawdzone na Mac mini)
 
-Znane narzędzia użytkownika:
-- [ ] **nanobanana** - (do potwierdzenia możliwości)
-- [ ] **Figma MCP** - (do potwierdzenia wersji/konfiguracji)
-- [ ] **Canva MCP** - (do potwierdzenia)
-- [ ] ... inne (użytkownik poda listę z Mac mini)
+| Narzedzie | MCP Server | Mozliwosci | Uzycie w debacie |
+|-----------|-----------|------------|-------------------|
+| **Nano Banana** | `nano-banana` | Gemini image gen: `generate_image`, `edit_image`, `continue_editing` | Generowanie koncepcji wizualnych z promptow tekstowych, iteracja na obrazach |
+| **Figma MCP** | `claude.ai Figma` | `create_new_file`, `generate_diagram`, `get_design_context`, `get_screenshot`, `use_figma` | Diagramy architektoniczne, wireframy, design systemy, eksport screenshotow |
+| **Kapture MCP** | `kapture` | `screenshot`, `navigate`, `click`, `dom` (Brave browser) | Screenshoty istniejacych stron do analizy, capture referencji wizualnych |
+| **Playwright MCP** | `playwright` | `browser_take_screenshot`, `browser_navigate`, `browser_snapshot` | Automatyczne screenshoty, testowanie wygladu stron |
+| ~~Canva MCP~~ | - | NIEDOSTEPNY | - |
 
 ### Tool: `generate_visuals()`
 
 ```
-Po zakończeniu debaty tekstowej:
-1. Bierze zwycięską koncepcję (lub top 2-3)
-2. Generuje prompty dla narzędzi graficznych
-3. Wywołuje dostępne narzędzia graficzne (Figma/Canva/nanobanana/DALL-E/etc.)
-4. Zwraca warianty wizualne do porównania
+Po zakonczeniu debaty tekstowej o designie:
+
+1. ZBIERZ koncepcje zwycieska (lub top 2-3 z debaty)
+   - Wyodrebnij: kolorystyka, layout, typografia, key elements
+
+2. GENERUJ obrazy przez Nano Banana MCP
+   - Uzyj `generate_image` z promptem opartym na zwycieskiej koncepcji
+   - Jesli potrzebna iteracja: `edit_image` lub `continue_editing`
+   - Output: PNG/JPG koncepcji wizualnej
+
+3. GENERUJ diagramy/wireframy przez Figma MCP
+   - `generate_diagram` dla flowchartow i architektur
+   - `create_new_file` + `use_figma` dla wireframow komponentow
+   - `get_screenshot` do eksportu wynikow jako obrazy
+
+4. ZBIERZ referencje przez Kapture/Playwright
+   - Jesli debata dotyczy redesignu: `screenshot` obecnej strony
+   - Jesli debata dotyczy konkurencji: `navigate` + `screenshot` stron konkurencji
+
+5. ZWROC wyniki do uzytkownika:
+   - Obraz(y) z Nano Banana (koncepcja wizualna)
+   - Screenshot(y) z Figma (wireframe/diagram)
+   - Opcjonalnie: screenshoty referencyjne
+   - Podsumowanie: ktory model zaproponowal co, co zostalo zsyntetyzowane
 ```
 
-**TODO:** Użytkownik sprawdzi na Mac mini:
-- `cat ~/Library/Application\ Support/Claude/claude_desktop_config.json`
-- Lista zainstalowanych MCP serwerów graficznych
-- Klucze API do narzędzi graficznych
+### Strategia narzedzi per typ debaty
+
+| Typ debaty | Nano Banana | Figma | Kapture/Playwright |
+|-----------|-------------|-------|--------------------|
+| Landing page design | Koncepcje hero, CTA | Wireframe layoutu | Screenshot konkurencji |
+| Logo/branding | Warianty logo | - | - |
+| Architektura systemu | - | Diagram C4/flowchart | - |
+| UX/UI review | - | Wireframe alternatyw | Screenshot obecnego UI |
+| Infografika | Warianty graficzne | Diagram danych | - |
 
 ---
 
@@ -321,15 +347,42 @@ MCP → Synteza:
 
 ---
 
+## Komenda /debata-ai
+
+Globalna komenda Claude Code (`~/.claude/commands/debata-ai.md`) z pelnym workflow:
+
+```
+/debata-ai on          # Wlacza MCP serwer w ~/.claude/.mcp.json
+/debata-ai off         # Wylacza MCP serwer
+/debata-ai status      # Sprawdza stan i dostepne modele
+/debata-ai <pytanie>   # Uruchamia debate z interaktywnym wyborem trybu/modeli
+```
+
+Workflow debaty:
+1. Sprawdza czy MCP dziala (jesli nie -> informuje o `/debata-ai on`)
+2. Wyswietla dostepne modele
+3. Pyta o tryb: quick_poll ($0.02-0.05) / debate ($0.05-0.15) / deep_dive ($0.15-0.40)
+4. Pyta o modele (wszystkie lub wybrane)
+5. Pokazuje potwierdzenie kosztow - wymaga `tak` przed startem
+6. Uruchamia debate i prezentuje wyniki
+
+Pliki:
+- `~/.claude/commands/debata-ai.md` - definicja komendy
+- `~/.claude/debate-mcp-keys.json` - backup kluczy API (uzywany przez on/off)
+- `~/.claude/.mcp.json` - globalna rejestracja MCP
+
+---
+
 ## Status
 
 - [x] Plan architektury
-- [x] Protokół debaty
-- [x] Szablony promptów
+- [x] Protokol debaty
+- [x] Szablony promptow
 - [x] Struktura projektu
-- [ ] **DO UZUPEŁNIENIA:** Lista narzędzi graficznych z Mac mini
-- [ ] **DO UZUPEŁNIENIA:** Konfiguracja Figma/Canva/nanobanana MCP
-- [ ] Implementacja Faza 1 (debata tekstowa)
-- [ ] Implementacja Faza 2 (grafika)
-- [ ] Testy
-- [ ] Deployment na Mac mini
+- [x] Lista narzedzi graficznych z Mac mini (Nano Banana, Figma MCP, Kapture, Playwright)
+- [x] Konfiguracja narzedzi graficznych w Fazie 2
+- [x] Implementacja Faza 1 (debata tekstowa) - 6 modeli: GPT, Gemini, Kimi, Grok, DeepSeek, Perplexity
+- [x] Deployment globalny - MCP w ~/.claude/.mcp.json, klucze w debate-mcp-keys.json
+- [x] Komenda /debata-ai z trybami on/off/status + interaktywny workflow debaty
+- [ ] Implementacja Faza 2 (grafika) - stub gotowy, logika do napisania
+- [ ] Testy end-to-end z prawdziwymi API
