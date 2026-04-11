@@ -13,15 +13,26 @@ export class OpenAICompatProvider extends BaseProvider {
     });
   }
 
+  private isReasoningModel(): boolean {
+    return /^o[1-9]/.test(this.config.model);
+  }
+
   async chat(systemPrompt: string, userMessage: string): Promise<string> {
-    const response = await this.client.chat.completions.create({
+    const tokenLimit = this.config.maxTokens ?? 4096;
+    const tokenParamKey = this.isReasoningModel()
+      ? "max_completion_tokens"
+      : "max_tokens";
+
+    const params = {
       model: this.config.model,
-      max_tokens: this.config.maxTokens ?? 4096,
+      [tokenParamKey]: tokenLimit,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userMessage },
       ],
-    });
+    } as unknown as OpenAI.ChatCompletionCreateParamsNonStreaming;
+
+    const response = await this.client.chat.completions.create(params);
 
     const content = response.choices[0]?.message?.content;
     if (!content) {
