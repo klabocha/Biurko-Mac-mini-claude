@@ -29,9 +29,9 @@ const DEFAULT_MODELS: Record<string, ModelDefault> = {
     apiKeyEnv: "MOONSHOT_API_KEY",
     baseUrl: "https://api.moonshot.ai/v1",
   },
-  "gpt-o3": {
+  "gpt-o4-mini": {
     provider: "openai",
-    model: "o3",
+    model: "o4-mini",
     apiKeyEnv: "OPENAI_API_KEY",
     baseUrl: "https://api.openai.com/v1",
   },
